@@ -1,0 +1,78 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    CommChannels Index
+{% endblock %}
+
+{% block script %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+
+    // Login firt time access
+    if (!localStorage.getItem('username')){
+
+      //First time access
+
+      //Form to login visible
+      document.querySelector('#layout').querySelector("#form-loginname").style.visibility = "visible";
+      document.querySelector('#layout').querySelector("#form-createchannel").style.visibility = "hidden";
+
+      // By default, submit button is disabled. Enable if there's text name
+      //document.querySelector('#submit-loginname').disabled = true;
+
+      //document.querySelector('#text-loginname').onkeyup = () => {
+      //    if (document.querySelector('#text-loginname').value.length > 0)
+      //      document.querySelector('#submit-loginname').disabled = false;
+      //    else
+      //      document.querySelector('#submit-loginname').disabled = true;
+      //}
+
+      // Get text-loginname and set at localStorage
+      document.querySelector('#layout').querySelector("#form-loginname").onsubmit = () => {
+          localStorage.setItem('username', document.querySelector('#text-loginname').value);
+
+          document.querySelector('#layout').querySelector("#form-loginname").style.visibility = "hidden";
+
+      }
+    } else {
+      // It's not first time access
+      document.querySelector('#layout').querySelector("#form-loginname").style.visibility = "collapse";
+      document.querySelector('#layout').querySelector("#form-createchannel").style.visibility = "visible";
+    }
+
+    // Display the loginname
+    if ( localStorage.getItem('username') !== null)
+      document.querySelector('#username').innerHTML = "Hello, " + localStorage.getItem('username') + "!!";
+
+
+  });
+  </script>
+
+{% endblock %}
+
+{% block body %}
+  <span id="username" class="label label-primary"></span>
+
+
+  <form id="form-loginname" >
+        <div class="form-group">
+            <label for="name">Hello, It's the fist time you enter this page. Please, choose a name: </label>
+            <input id="text-loginname" class="form-control" autocomplete="off" autofocus placeholder="Enter login name" type="text">
+        </div>
+        <div class="form-group">
+          <input id="submit-loginname" class="btn btn-primary" type="submit">
+        </div>
+  </form>
+
+
+  <form id="form-createchannel" action="createchannel" method="post">
+        <div class="form-group">
+            <label for="name">Please, enter a name for new a channel: </label>
+            <input id="text-channelname" class="form-control" autocomplete="off" autofocus placeholder="Enter channel name" type="text">
+        </div>
+        <div class="form-group">
+          <button class="btn btn-primary">Create channel</button>
+        </div>
+  </form>
+
+{% endblock %}
