@@ -1,1 +1,3 @@
 CommChannel/__pycache__/*
+CommChannel/classes/__pycache__/*
+CommChannel/flask_session/*

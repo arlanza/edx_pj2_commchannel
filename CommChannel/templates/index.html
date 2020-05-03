@@ -14,8 +14,8 @@
       //First time access
 
       //Form to login visible
-      document.querySelector('#layout').querySelector("#form-loginname").style.visibility = "visible";
-      document.querySelector('#layout').querySelector("#form-createchannel").style.visibility = "hidden";
+      document.querySelector('#div-login').style.visibility = "visible";
+      document.querySelector('#div-channel').style.visibility = "hidden";
 
       // By default, submit button is disabled. Enable if there's text name
       //document.querySelector('#submit-loginname').disabled = true;
@@ -28,21 +28,69 @@
       //}
 
       // Get text-loginname and set at localStorage
-      document.querySelector('#layout').querySelector("#form-loginname").onsubmit = () => {
+      document.querySelector('#div-login').querySelector("#form-loginname").onsubmit = () => {
           localStorage.setItem('username', document.querySelector('#text-loginname').value);
-
-          document.querySelector('#layout').querySelector("#form-loginname").style.visibility = "hidden";
-
+          document.querySelector('#div-login').style.visibility = "hidden";
       }
+
     } else {
       // It's not first time access
-      document.querySelector('#layout').querySelector("#form-loginname").style.visibility = "collapse";
-      document.querySelector('#layout').querySelector("#form-createchannel").style.visibility = "visible";
+      document.querySelector('#div-login').style.visibility = "hidden";
+      document.querySelector('#div-channel').style.visibility = "visible";
+
+      // call createchannel
+      document.querySelector("#form-createchannel").onsubmit = () => {
+
+          // Initialize new request
+          const username = localStorage.getItem('username');
+          const channelname = document.querySelector('#text-channelname').value
+          document.querySelector('#text-username').value=localStorage.getItem('username');
+          document.querySelector("#form-createchannel").submit()
+
+          return true;
+      };
+
+      document.querySelector('#form').onsubmit = () => {
+
+
+          // Initialize new request
+          const request = new XMLHttpRequest();
+          const currency = document.querySelector('#currency').value;
+          request.open('POST', '/convert');
+
+          // Callback function for when request completes
+          request.onload = () => {
+
+              // Extract JSON data from request
+              const data = JSON.parse(request.responseText);
+
+              // Update the result div
+              if (data.success) {
+                  const contents = `1 USD is equal to ${data.rate} ${currency}.`
+                  document.querySelector('#result').innerHTML = contents;
+              }
+              else {
+                  document.querySelector('#result').innerHTML = 'There was an error.';
+              }
+          }
+
+          // Add data to send with request
+          const data = new FormData();
+          data.append('currency', currency);
+
+          // Send request
+          request.send(data);
+          return false;
+      };
+
+
+
     }
 
     // Display the loginname
     if ( localStorage.getItem('username') !== null)
-      document.querySelector('#username').innerHTML = "Hello, " + localStorage.getItem('username') + "!!";
+      document.querySelector('#username').innerHTML = "Hello guy, " + localStorage.getItem('username') + "!!";
+
 
 
   });
@@ -53,26 +101,62 @@
 {% block body %}
   <span id="username" class="label label-primary"></span>
 
-
-  <form id="form-loginname" >
+  <div id="div-login" class="container">
+    <form id="form-loginname" >
         <div class="form-group">
-            <label for="name">Hello, It's the fist time you enter this page. Please, choose a name: </label>
+            <label for="name">Hey, It's the fist time you enter this page. Please, choose a name: </label>
             <input id="text-loginname" class="form-control" autocomplete="off" autofocus placeholder="Enter login name" type="text">
         </div>
         <div class="form-group">
-          <input id="submit-loginname" class="btn btn-primary" type="submit">
+          <input id="submit-loginname" class="btn btn-primary" type="submit" value="Login">
         </div>
-  </form>
+    </form>
+  </div>
+
+  <div id="div-channel" class="container">
+
+    {% if channels %}
+
+    <span id="span-channels" class="label label-primary">Channel list. </span>
+    <ul>
+      {% for channelname in channels %}
+          <li>
+                Channel:  {{ channelname }}
+                <ul>
+                  {% if channels[channelname] %}
+                    {% for message in channels[channelname] %}
+                      {% if message %}
+                        <li>
+                          Message:  {{ message.show() }}
+                        </li>
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                </ul>
+          </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
 
 
-  <form id="form-createchannel" action="createchannel" method="post">
+    <form id="form-createchannel" action="createchannel" method="post">
         <div class="form-group">
-            <label for="name">Please, enter a name for new a channel: </label>
-            <input id="text-channelname" class="form-control" autocomplete="off" autofocus placeholder="Enter channel name" type="text">
+            <label for="name">Please, enter a name for a new channel: </label>
+            <input id="text-channelname" name="text-channelname" class="form-control" autocomplete="off" autofocus placeholder="Enter channel name" type="text">
+            <input id="text-username" name="text-username" style="display:none" type="text">
         </div>
         <div class="form-group">
-          <button class="btn btn-primary">Create channel</button>
+          <input id="submit-createchannel" class="btn btn-primary" type="submit" value="Create channel">
         </div>
-  </form>
+    </form>
 
+    <form id="form">
+        <input id="currency" autocomplete="off" autofocus placeholder="Currency" type="text">
+        <input type="submit" value="Get Exchange Rate">
+    </form>
+    <br>
+    <div id="result"></div>
+
+
+  </div>
 {% endblock %}
