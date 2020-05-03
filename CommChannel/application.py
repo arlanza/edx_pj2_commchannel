@@ -41,8 +41,32 @@ def createchannel():
 
     if channelname not in channels:
         channels[channelname] = None
-        msgResult="New Channel "+ channelname + "added"
+        msgResult="New Channel "+ channelname + " added"
     else:
-        msgResult="Channel "+ channelname + "previously added"
+        msgResult="Channel "+ channelname + " previously added"
 
     return render_template("index.html",channels=channels, msgResult=msgResult)
+
+@app.route("/channel/<string:channelname>", methods=["POST","GET"])
+def channel(channelname):
+    global channels
+
+    msgResult=""
+    return render_template("channel.html", channelname=channelname, messages=channels[channelname], msgResult=msgResult)
+
+@app.route("/createmessage/<string:channelname>", methods=["POST"])
+def createmessage(channelname):
+    global channels
+    username = request.form.get("text-username")
+    textmessage = request.form.get("text-message")
+    message = Message(username, datetime.now(), textmessage)
+
+
+    messages=channels[channelname]
+    if not channels[channelname]:
+        channels[channelname]=[message]
+    else:
+        channels[channelname].append(message)
+
+    msgResult=""
+    return render_template("channel.html", channelname=channelname, messages=channels[channelname], msgResult=msgResult)

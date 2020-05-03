@@ -38,18 +38,15 @@
       document.querySelector('#div-login').style.visibility = "hidden";
       document.querySelector('#div-channel').style.visibility = "visible";
 
-      // call createchannel
-      document.querySelector("#form-createchannel").onsubmit = () => {
+      // call createmessage
+      document.querySelector("#form-createmessage").onsubmit = () => {
 
           // Initialize new request
-          const username = localStorage.getItem('username');
-          const channelname = document.querySelector('#text-channelname').value
           document.querySelector('#text-username').value=localStorage.getItem('username');
-          document.querySelector("#form-createchannel").submit()
-
+          document.querySelector("#form-createmessage").action="/createmessage/{{ channelname }}"
+          document.querySelector("#form-createmessage").submit()
           return true;
       };
-
 
     }
     // Display the loginname
@@ -84,45 +81,34 @@
 
   <div id="div-channel" class="container">
 
-    {% if channels %}
 
-    <span id="span-channels" class="label label-primary">Channel list. </span>
+    <span id="span-messages" class="label label-primary">Channel: {{channelname}} </span>
     <ul>
-      {% for channelname in channels %}
-          <li>
-                  <a href="{{ url_for('channel', channelname=channelname) }}">
-                  Channel: "{{ channelname }}"
-                </a>
-                <ul>
-                  {% if channels[channelname] %}
-                    {% for message in channels[channelname] %}
-                      {% if message %}
-                        <li>
-                          Message:  {{ message.show() }}
-                        </li>
-                      {% endif %}
-                    {% endfor %}
-                  {% endif %}
-                </ul>
-          </li>
-      {% endfor %}
+      {% if messages %}
+        {% for message in messages %}
+            {% if message %}
+              <li>
+                Mensaje: {{message.show()}}
+              </li>
+            {% endif %}
+        {% endfor %}
+      {% endif %}
     </ul>
-    {% endif %}
 
-
-    <form id="form-createchannel" action="createchannel" method="post">
+    <form id="form-createmessage" method="post">
         <div class="form-group">
-            <label for="name">Please, enter a name for a new channel: </label>
-            <input id="text-channelname" name="text-channelname" class="form-control" autocomplete="off" autofocus placeholder="Enter channel name" type="text">
+            <input id="text-message" name="text-message" class="form-control" autocomplete="off" autofocus placeholder="Your message" type="text">
             <input id="text-username" name="text-username" style="display:none" type="text">
         </div>
         <div class="form-group">
-          <input id="submit-createchannel" class="btn btn-primary" type="submit" value="Create channel">
+          <input id="submit-createmessage" class="btn btn-primary" type="submit" value="Send message">
         </div>
     </form>
 
-
-
-
+    <div class="form-group">
+        <button class="btn btn-primary" onclick="window.location.href='/'">Back</button>
+    </div>
   </div>
+
+
 {% endblock %}
