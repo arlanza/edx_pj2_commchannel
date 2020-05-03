@@ -39,12 +39,10 @@ def createchannel():
     username = request.form.get("text-username")
     channelname = request.form.get("text-channelname")
 
-    #message1 = Message("Laura1111",datetime.now(),"Mensaje11111")
-    #message2 = Message("Laura1111",datetime.now(),"Mensaje22222")
+    if channelname not in channels:
+        channels[channelname] = None
+        msgResult="New Channel "+ channelname + "added"
+    else:
+        msgResult="Channel "+ channelname + "previously added"
 
-    # channels["1"+username]=[message1,message2]
-    #channels[username]=[message1,message2]
-    #channels[channelname]=[message1,message2]
-    channels[channelname] = None
-
-    return render_template("index.html",channels=channels)
+    return render_template("index.html",channels=channels, msgResult=msgResult)

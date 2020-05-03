@@ -50,48 +50,11 @@
           return true;
       };
 
-      document.querySelector('#form').onsubmit = () => {
-
-
-          // Initialize new request
-          const request = new XMLHttpRequest();
-          const currency = document.querySelector('#currency').value;
-          request.open('POST', '/convert');
-
-          // Callback function for when request completes
-          request.onload = () => {
-
-              // Extract JSON data from request
-              const data = JSON.parse(request.responseText);
-
-              // Update the result div
-              if (data.success) {
-                  const contents = `1 USD is equal to ${data.rate} ${currency}.`
-                  document.querySelector('#result').innerHTML = contents;
-              }
-              else {
-                  document.querySelector('#result').innerHTML = 'There was an error.';
-              }
-          }
-
-          // Add data to send with request
-          const data = new FormData();
-          data.append('currency', currency);
-
-          // Send request
-          request.send(data);
-          return false;
-      };
-
-
 
     }
-
     // Display the loginname
     if ( localStorage.getItem('username') !== null)
       document.querySelector('#username').innerHTML = "Hello guy, " + localStorage.getItem('username') + "!!";
-
-
 
   });
   </script>
@@ -111,6 +74,12 @@
           <input id="submit-loginname" class="btn btn-primary" type="submit" value="Login">
         </div>
     </form>
+  </div>
+
+  <div id="dic-result">
+    {% if msgResult %}
+      <span id="msgResult" class="label label-primary">{{ msgResult }}</span>
+    {% endif %}
   </div>
 
   <div id="div-channel" class="container">
@@ -150,12 +119,7 @@
         </div>
     </form>
 
-    <form id="form">
-        <input id="currency" autocomplete="off" autofocus placeholder="Currency" type="text">
-        <input type="submit" value="Get Exchange Rate">
-    </form>
-    <br>
-    <div id="result"></div>
+
 
 
   </div>
